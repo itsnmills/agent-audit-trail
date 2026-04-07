@@ -1,0 +1,44 @@
+# AI Agent Audit Trail Generator — Dependencies
+# HIPAA §164.312 Compliance Tool for Healthcare AI Monitoring
+#
+# Python 3.10+ required (uses | union type syntax)
+# Install: pip install -r requirements.txt
+
+# Core data storage and ORM
+# SQLAlchemy provides the ORM layer for the tamper-evident audit store
+# §164.312(b) Audit Controls — persistent, queryable audit log
+sqlalchemy>=2.0.0,<3.0.0
+
+# REST API and real-time dashboard
+# FastAPI provides the audit dashboard and REST API
+# §164.312(b) — Real-time examination of ePHI activity
+fastapi>=0.110.0,<1.0.0
+
+# ASGI server for FastAPI
+uvicorn[standard]>=0.27.0,<1.0.0
+
+# PDF report generation
+# Used by ReportGenerator to produce formal audit reports
+# §164.316(b) Documentation — formal compliance artifacts
+reportlab>=4.1.0,<5.0.0
+
+# HTML template engine for dashboard
+# Used to render the dark-mode terminal dashboard
+jinja2>=3.1.0,<4.0.0
+
+# Type checking and data validation (optional but recommended)
+# pydantic is used by FastAPI internally
+pydantic>=2.0.0,<3.0.0
+
+# ---------------------------------------------------------------------------
+# Development and testing dependencies
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
+# (Create requirements-dev.txt for dev-only deps below)
+# ---------------------------------------------------------------------------
+
+# Testing framework
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+
+# Test coverage reporting
+pytest-cov>=4.1.0
