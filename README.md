@@ -486,6 +486,69 @@ agent-audit-trail/
 
 ---
 
+## Deployment & Privacy
+
+### What This Tool Requires
+
+| Requirement | Details |
+|---|---|
+| **Python** | Version 3.10 or newer — [download here](https://www.python.org/downloads/) |
+| **Disk space** | ~50 MB for the tool + dependencies. Database grows based on action volume (~1 KB per action). |
+| **Operating system** | Any — Windows, macOS, or Linux |
+| **Network access** | **None.** This tool makes zero network calls. |
+| **Cloud accounts** | **None.** No AWS, Azure, or cloud services required. |
+| **Admin/root access** | **Not required.** Runs in user space. |
+
+### What This Tool Accesses On Your System
+
+| Resource | How It's Used | Can You Control It? |
+|---|---|---|
+| **A local SQLite database** | Stores the audit trail. Created in `data/audit.db` inside the project folder. | Yes — configure `AUDIT_DB_PATH` to any location you choose. |
+| **Local file system (read)** | Reads agent action data files you provide (JSON, CSV, etc.). Only reads files you explicitly pass to it. | Yes — you choose which files to ingest. |
+| **Local file system (write)** | Writes the database, generated PDF/Markdown reports, and logs. All within the project directory. | Yes — configure `AUDIT_REPORT_DIR` for report output location. |
+| **Local network port** | The dashboard binds to `localhost:8090` for the web UI. Only accessible from your own machine unless you explicitly change the host binding. | Yes — configure `AUDIT_DASHBOARD_HOST` and `AUDIT_DASHBOARD_PORT`. |
+
+### What This Tool Does NOT Do
+
+- **Does not connect to the internet.** There are zero HTTP calls, zero API calls, zero telemetry, zero analytics, zero update checks. Verified by code audit — [search the codebase yourself](https://github.com/itsnmills/agent-audit-trail/search?q=requests+urllib+http.client).
+- **Does not send your data anywhere.** All data stays in the local SQLite database on your machine. No cloud sync, no remote logging, no external databases.
+- **Does not require credentials or login.** There are no accounts, no API keys, no license keys.
+- **Does not access your EHR, network, or medical systems.** It only analyzes log data you explicitly provide. It never connects to Epic, Cerner, PACS, or any clinical system.
+- **Does not phone home.** The author (or anyone else) cannot see what you run, what data you load, or what reports you generate. This is a fully offline, local application.
+
+### How Data Flows
+
+```
+Your AI agent logs          This tool (runs locally)              Your local disk
+(you provide these)   →     Ingestion → Analysis → Detection  →  SQLite DB + PDF reports
+        ↑                                                               ↑
+   YOU control this                                                YOU control this
+   Nothing leaves your machine. Nothing is transmitted anywhere.
+```
+
+### Open Source Transparency
+
+This tool is released under the **MIT License** — the most permissive open-source license. This means:
+
+1. **The entire source code is public.** Every line is visible on GitHub. You can read every function, verify every file operation, and confirm there are no hidden behaviors.
+2. **You can modify it.** Fork it, customize it for your organization, add your own controls — no restrictions.
+3. **You can audit it.** Before running it, your IT team can review the code. There is nothing compiled, obfuscated, or hidden.
+4. **No vendor lock-in.** Your audit data is in a standard SQLite database that any tool can read. Reports are standard PDF and Markdown files.
+
+### For IT Teams Evaluating This Tool
+
+If you are an IT director, compliance officer, or security engineer evaluating this for your organization:
+
+- **Dependency list**: SQLAlchemy (database ORM), FastAPI + Uvicorn (local web dashboard), ReportLab (PDF generation), Jinja2 (HTML templates), Pydantic (data validation). All are widely-used, audited, open-source Python packages.
+- **No C extensions or compiled binaries** beyond what these standard packages include.
+- **No environment variables are required** — all have sensible defaults. Optional env vars allow you to configure paths and thresholds.
+- **Database schema is documented** in `models.py` — standard relational tables, no proprietary formats.
+- **Test suite included**: 63 tests verify correctness. Run `pytest tests/ -v` to validate on your system.
+
+> **In plain English:** You download it, you run it on your computer, it reads files you give it, it writes reports to your computer. Nobody else sees anything. It's like a calculator — it does its work locally and keeps no secrets.
+
+---
+
 ## Contributing
 
 Contributions are welcome. Areas of particular interest:
